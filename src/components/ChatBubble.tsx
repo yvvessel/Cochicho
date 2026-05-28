@@ -1,21 +1,21 @@
 import { StyleSheet, Text, View } from "react-native";
 
 const styles = StyleSheet.create({
-  messageContainer: {
+  containerMensagem: {
     marginVertical: 6,
     marginHorizontal: 8,
   },
-  balaoMensagem: {
+  bolaMensagem: {
     borderRadius: 18,
     paddingHorizontal: 16,
     paddingVertical: 12,
     maxWidth: "80%",
   },
-  euMensagem: {
+  minhasMensagens: {
     alignSelf: "flex-end",
     backgroundColor: "#6366f1",
   },
-  outroMensagem: {
+  mensagensOutros: {
     alignSelf: "flex-start",
     backgroundColor: "#334155",
   },
@@ -24,49 +24,51 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
   },
-  timestamp: {
+  horario: {
     color: "#94a3b8",
     fontSize: 12,
     marginTop: 4,
     fontWeight: "400",
   },
-  timestampContainer: {
+  containerHorario: {
     alignItems: "flex-end",
   },
 });
 
-type ChatBubbleProps = {
+type PropsBalaMensagem = {
   texto: string;
   enviadoPorMim: boolean;
-  timestamp: number;
+  horario: number;
 };
 
-const formatarHora = (timestamp: number): string => {
-  const data = new Date(timestamp);
+const formatarHora = (horario: number): string => {
+  const data = new Date(horario);
   const horas = String(data.getHours()).padStart(2, "0");
   const minutos = String(data.getMinutes()).padStart(2, "0");
   return `${horas}:${minutos}`;
 };
 
-const ChatBubble = ({ texto, enviadoPorMim, timestamp }: ChatBubbleProps) => {
+const BalaMensagem = ({ texto, enviadoPorMim, horario }: PropsBalaMensagem) => {
   return (
     <View
       style={[
-        styles.messageContainer,
-        enviadoPorMim ? { alignItems: "flex-end" } : { alignItems: "flex-start" },
+        styles.containerMensagem,
+        enviadoPorMim
+          ? { alignItems: "flex-end" }
+          : { alignItems: "flex-start" },
       ]}
     >
       <View
         style={[
-          styles.balaoMensagem,
-          enviadoPorMim ? styles.euMensagem : styles.outroMensagem,
+          styles.bolaMensagem,
+          enviadoPorMim ? styles.minhasMensagens : styles.mensagensOutros,
         ]}
       >
         <Text style={styles.estiloMensagem}>{texto}</Text>
       </View>
-      <Text style={styles.timestamp}>{formatarHora(timestamp)}</Text>
+      <Text style={styles.horario}>{formatarHora(horario)}</Text>
     </View>
   );
 };
 
-export default ChatBubble;
+export default BalaMensagem;

@@ -7,7 +7,7 @@ import {
 } from "react-native";
 
 const styles = StyleSheet.create({
-  footer: {
+  rodape: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     borderColor: "#334155",
     fontSize: 15,
   },
-  botaoMensagem: {
+  botaoEnviar: {
     alignItems: "center",
     backgroundColor: "#6366f1",
     borderRadius: 24,
@@ -39,17 +39,17 @@ const styles = StyleSheet.create({
   },
 });
 
-type ChatInputProps = {
+type PropsEntradaChat = {
   mensagem: string;
   onChangeText: (text: string) => void;
   onSend: () => void;
 };
 
-const ChatInput = ({ mensagem, onChangeText, onSend }: ChatInputProps) => {
+const EntradaChat = ({ mensagem, onChangeText, onSend }: PropsEntradaChat) => {
   const temMensagem = mensagem.trim().length > 0;
 
   return (
-    <View style={styles.footer}>
+    <View style={styles.rodape}>
       <TextInput
         style={styles.campoMensagem}
         onChangeText={onChangeText}
@@ -60,7 +60,7 @@ const ChatInput = ({ mensagem, onChangeText, onSend }: ChatInputProps) => {
 
       {temMensagem && (
         <TouchableOpacity
-          style={styles.botaoMensagem}
+          style={styles.botaoEnviar}
           onPress={onSend}
           activeOpacity={0.8}
         >
@@ -76,4 +76,4 @@ const ChatInput = ({ mensagem, onChangeText, onSend }: ChatInputProps) => {
   );
 };
 
-export default ChatInput;
+export default EntradaChat;

@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import {
     FlatList,
     KeyboardAvoidingView,
@@ -8,8 +8,8 @@ import {
     View,
 } from "react-native";
 
-import ChatBubble from "@/components/ChatBubble";
-import ChatInput from "@/components/ChatInput";
+import BalaMensagem from "@/components/ChatBubble";
+import EntradaChat from "@/components/ChatInput";
 import GroupHeader from "@/components/GroupHeader";
 import { GrupoContext, Mensagem } from "@/context/groupcontext";
 
@@ -18,30 +18,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0f172a",
   },
-  messagesContainer: {
+  containerMensagens: {
     flex: 1,
     justifyContent: "flex-end",
   },
-  emptyContainer: {
+  containerVazio: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  emptyText: {
+  textoVazio: {
     color: "#cbd5e1",
     fontSize: 16,
   },
 });
 
-const EMPTY_MESSAGE_TIMESTAMP = 0;
+const TIMESTAMP_MENSAGEM_VAZIA = 0;
 
 export default function ChatScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { obterGrupo, adicionarMensagem } = useContext(GrupoContext);
+  const refListaMensagens = useRef<FlatList>(null);
 
   const [mensagem, setMensagem] = useState("");
   const grupo = obterGrupo(id!);
+
+  useEffect(() => {
+    if (grupo && grupo.mensagens.length > 0) {
+      refListaMensagens.current?.scrollToEnd({ animated: true });
+    }
+  }, [grupo]);
 
   if (!grupo) {
     return (
@@ -56,25 +63,25 @@ export default function ChatScreen() {
     );
   }
 
-  const handleSendMessage = () => {
+  const handleEnviarMensagem = () => {
     if (mensagem.trim().length === 0) return;
 
-    const newMessage: Mensagem = {
+    const novaMensagem: Mensagem = {
       id: Date.now(),
       texto: mensagem,
       enviadoPorMim: true,
       timestamp: Date.now(),
     };
 
-    adicionarMensagem(grupo.id, newMessage);
+    adicionarMensagem(grupo.id, novaMensagem);
     setMensagem("");
   };
 
-  const renderMessage = ({ item }: { item: Mensagem }) => (
-    <ChatBubble
+  const renderizarMensagem = ({ item }: { item: Mensagem }) => (
+    <BalaMensagem
       texto={item.texto}
       enviadoPorMim={item.enviadoPorMim}
-      timestamp={item.timestamp}
+      horario={item.timestamp}
     />
   );
 
@@ -82,7 +89,6 @@ export default function ChatScreen() {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
-      keyboardVerticalOffset={100}
     >
       <GroupHeader
         nomeGrupo={grupo.nomeGrupo}
@@ -91,19 +97,20 @@ export default function ChatScreen() {
         onPress={() => router.push(`/chat/${id}/info`)}
       />
 
-      <View style={styles.messagesContainer}>
+      <View style={styles.containerMensagens}>
         {grupo.mensagens.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <ChatBubble
+          <View style={styles.containerVazio}>
+            <BalaMensagem
               texto="Nenhuma mensagem ainda. Comece a conversar! 👋"
               enviadoPorMim={false}
-              timestamp={EMPTY_MESSAGE_TIMESTAMP}
+              horario={TIMESTAMP_MENSAGEM_VAZIA}
             />
           </View>
         ) : (
           <FlatList
+            ref={refListaMensagens}
             data={grupo.mensagens}
-            renderItem={renderMessage}
+            renderItem={renderizarMensagem}
             keyExtractor={(item) => item.id.toString()}
             scrollEnabled={true}
             contentContainerStyle={{ paddingBottom: 8 }}
@@ -111,10 +118,10 @@ export default function ChatScreen() {
         )}
       </View>
 
-      <ChatInput
+      <EntradaChat
         mensagem={mensagem}
         onChangeText={setMensagem}
-        onSend={handleSendMessage}
+        onSend={handleEnviarMensagem}
       />
     </KeyboardAvoidingView>
   );
