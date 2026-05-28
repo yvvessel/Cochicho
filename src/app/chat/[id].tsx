@@ -3,7 +3,6 @@ import { useContext, useRef, useState, useEffect } from "react";
 import {
     FlatList,
     KeyboardAvoidingView,
-    Platform,
     StyleSheet,
     View,
 } from "react-native";
@@ -45,10 +44,31 @@ export default function ChatScreen() {
   const grupo = obterGrupo(id!);
 
   useEffect(() => {
+    // Scroll to end using scrollToIndex for more reliable scrolling
     if (grupo && grupo.mensagens.length > 0) {
-      refListaMensagens.current?.scrollToEnd({ animated: true });
+      const lastIndex = grupo.mensagens.length - 1;
+      const timer = setTimeout(() => {
+        refListaMensagens.current?.scrollToIndex({
+          index: lastIndex,
+          animated: false,
+          viewPosition: 1,
+        });
+      }, 500);
+      return () => clearTimeout(timer);
     }
-  }, [grupo]);
+  }, [grupo?.mensagens.length, grupo]);
+
+  // Auto-scroll when new messages arrive
+  useEffect(() => {
+    if (grupo && grupo.mensagens.length > 0) {
+      const lastIndex = grupo.mensagens.length - 1;
+      refListaMensagens.current?.scrollToIndex({
+        index: lastIndex,
+        animated: true,
+        viewPosition: 1,
+      });
+    }
+  }, [grupo?.mensagens, grupo]);
 
   if (!grupo) {
     return (
@@ -87,7 +107,7 @@ export default function ChatScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior="padding"
       style={styles.container}
     >
       <GroupHeader
@@ -114,6 +134,12 @@ export default function ChatScreen() {
             keyExtractor={(item) => item.id.toString()}
             scrollEnabled={true}
             contentContainerStyle={{ paddingBottom: 8 }}
+            keyboardDismissMode="on-drag"
+            onEndReachedThreshold={0.1}
+            onScrollToIndexFailed={(error) => {
+              // Fallback to scrollToEnd if scrollToIndex fails
+              refListaMensagens.current?.scrollToEnd({ animated: false });
+            }}
           />
         )}
       </View>
