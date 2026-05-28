@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#0f172a",
-    paddingTop: 12,
+    paddingTop: 30,
     paddingHorizontal: 16,
   },
   scrollContent: {
@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     marginBottom: 32,
+    marginTop: 12,
   },
   backButton: {
     alignSelf: "flex-start",
@@ -130,6 +131,7 @@ export default function GroupInfoScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { obterGrupo, atualizarGrupo } = useContext(GrupoContext);
   const [isEditingName, setIsEditingName] = useState(false);
+  const [nomeEditando, setNomeEditando] = useState("");
 
   const grupo = obterGrupo(id!);
 
@@ -168,9 +170,14 @@ export default function GroupInfoScreen() {
     }
   };
 
-  const handleNameChange = (newName: string) => {
-    if (newName.trim()) {
-      atualizarGrupo(id!, { nomeGrupo: newName });
+  const handleEditarNomeAbrir = () => {
+    setNomeEditando(grupo.nomeGrupo);
+    setIsEditingName(true);
+  };
+
+  const handleSalvarNome = () => {
+    if (nomeEditando.trim()) {
+      atualizarGrupo(id!, { nomeGrupo: nomeEditando });
     }
     setIsEditingName(false);
   };
@@ -200,8 +207,8 @@ export default function GroupInfoScreen() {
             {isEditingName ? (
               <>
                 <TextInput
-                  onChangeText={(text) => handleNameChange(text)}
-                  defaultValue={grupo.nomeGrupo}
+                  onChangeText={setNomeEditando}
+                  value={nomeEditando}
                   style={styles.editInput}
                   placeholder="Nome do grupo"
                   placeholderTextColor="#64748b"
@@ -209,7 +216,7 @@ export default function GroupInfoScreen() {
                 />
                 <TouchableOpacity
                   style={styles.editButton}
-                  onPress={() => setIsEditingName(false)}
+                  onPress={handleSalvarNome}
                   activeOpacity={0.7}
                 >
                   <Text style={styles.editButtonText}>✓</Text>
@@ -220,7 +227,7 @@ export default function GroupInfoScreen() {
                 <Text style={styles.groupTitle}>{grupo.nomeGrupo}</Text>
                 <TouchableOpacity
                   style={styles.editButton}
-                  onPress={() => setIsEditingName(true)}
+                  onPress={handleEditarNomeAbrir}
                   activeOpacity={0.7}
                 >
                   <Text style={styles.editButtonText}>✎</Text>

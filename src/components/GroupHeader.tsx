@@ -1,10 +1,4 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const styles = StyleSheet.create({
   header: {
@@ -12,7 +6,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    height: 80,
+    paddingTop: 35,
+    height: 105,
     backgroundColor: "#1e293b",
     borderBottomWidth: 1,
     borderBottomColor: "#334155",
