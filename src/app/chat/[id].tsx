@@ -1,11 +1,11 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View,
+    FlatList,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    View,
 } from "react-native";
 
 import ChatBubble from "@/components/ChatBubble";
@@ -105,7 +105,6 @@ export default function ChatScreen() {
             data={grupo.mensagens}
             renderItem={renderMessage}
             keyExtractor={(item) => item.id.toString()}
-            inverted
             scrollEnabled={true}
             contentContainerStyle={{ paddingBottom: 8 }}
           />
